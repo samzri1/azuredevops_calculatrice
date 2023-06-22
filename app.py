@@ -1,52 +1,47 @@
-# Fonction d'addition
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
 def addition(a, b):
     return a + b
 
-# Fonction de soustraction
 def soustraction(a, b):
     return a - b
 
-# Fonction de multiplication
 def multiplication(a, b):
     return a * b
 
-# Fonction de division
 def division(a, b):
     if b != 0:
         return a / b
     else:
         return "Erreur: division par zéro!"
 
-# Fonction principale
-def calculatrice():
-    print("Bienvenue dans la calculatrice!")
-    while True:
-        print("Veuillez sélectionner une opération:")
-        print("1. Addition")
-        print("2. Soustraction")
-        print("3. Multiplication")
-        print("4. Division")
-        print("5. Quitter")
-        
-        choix = input("Votre choix (1/2/3/4/5): ")
-        
-        if choix == "5":
-            print("Au revoir!")
-            break
-        
-        num1 = float(input("Entrez le premier nombre: "))
-        num2 = float(input("Entrez le deuxième nombre: "))
-        
-        if choix == "1":
-            print("Résultat: ", addition(num1, num2))
-        elif choix == "2":
-            print("Résultat: ", soustraction(num1, num2))
-        elif choix == "3":
-            print("Résultat: ", multiplication(num1, num2))
-        elif choix == "4":
-            print("Résultat: ", division(num1, num2))
-        else:
-            print("Choix invalide. Veuillez réessayer.")
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-# Appel de la fonction principale
-calculatrice()
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    num1 = float(request.form['num1'])
+    num2 = float(request.form['num2'])
+    choix = request.form['operation']
+
+    if choix == "addition":
+        result = addition(num1, num2)
+        operation = "+"
+    elif choix == "soustraction":
+        result = soustraction(num1, num2)
+        operation = "-"
+    elif choix == "multiplication":
+        result = multiplication(num1, num2)
+        operation = "*"
+    elif choix == "division":
+        result = division(num1, num2)
+        operation = "/"
+
+    return render_template('result.html', num1=num1, num2=num2, operation=operation, result=result)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
+
